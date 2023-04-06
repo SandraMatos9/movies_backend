@@ -5,3 +5,10 @@ CREATE TABLE IF NOT EXISTS movies(
     duration INTEGER NOT NULL,
     price INTEGER NOT NULL
 );
+
+SELECT FROM movies;
+WHERE PRIMARY =id
+
+DELETE FROM movies
+WHERE PRIMARY = id
+
