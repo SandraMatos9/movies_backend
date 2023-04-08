@@ -27,7 +27,7 @@ const createMovies = async (
   const queryResult: QueryResult<movieResults> = await client.query(
     queryString
   );
-  console.log(queryResult)
+  //   console.log(queryResult)
   const createdMovie = queryResult.rows[0];
   return response.status(201).json(createdMovie);
 };
@@ -47,13 +47,22 @@ const listMovies = async (
         FROM
             movies
         WHERE
-            category = $;
+            category = $1;
     `;
     const queryConfig: QueryConfig = {
       text: queryString,
       values: [category],
     };
     queryResult = await client.query(queryConfig);
+    if (queryResult.rowCount === 0) {
+      queryString = `
+        SELECT
+            * 
+        FROM
+            movies;
+        `;
+      queryResult = await client.query(queryString);
+    }
   } else {
     queryString = `
         SELECT
@@ -72,7 +81,6 @@ const idMovies = async (
   request: Request,
   response: Response
 ): Promise<Response> => {
-
   const movie: TMovies = response.locals.movie;
 
   return response.status(200).json(movie);

@@ -8,9 +8,9 @@ app.use(express.json());
 
 app.post("/movies",moviesMiddlewareNameExist,createMovies);
 app.get("/movies",listMovies);
-app.get("/movies/:id"),idMovieExistsMiddleware, idMovies;
+app.get("/movies/:id",idMovieExistsMiddleware, idMovies);
 app.patch("/movies/:id",idMovieExistsMiddleware,moviesMiddlewareNameExist,updateMovies);
-app.delete("/movies/:id"),idMovieExistsMiddleware,deleteMovies;
+app.delete("/movies/:id",idMovieExistsMiddleware,deleteMovies);
 
 app.listen(3000, async () => {
   await startDatabase();

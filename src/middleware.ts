@@ -8,8 +8,8 @@ const idMovieExistsMiddleware = async (
   response: Response,
   next: NextFunction
 ): Promise<Response | void> => {
-  // const id: number = parseInt(request.params.id)
-  const { id } = request.params;
+    
+  const id: number = parseInt(request.params.id)
   const queryString: string = `
         SELECT
             * 
@@ -26,12 +26,14 @@ const idMovieExistsMiddleware = async (
   const queryResult: QueryResult<movieResults> = await client.query(
     queryConfig
   );
+  console.log(queryResult)
 
   if (queryResult.rowCount === 0) {
     return response.status(404).json({
-      message: "error : Movie not found",
+      error: "Movie not found!",
     });
   }
+  console.log(queryResult.rows[0])
   response.locals.movie = queryResult.rows[0];
   return next();
 };
@@ -41,43 +43,36 @@ const moviesMiddlewareNameExist = async (
   response: Response,
   next: NextFunction
 ): Promise<Response | void> => {
-  const name: any = request.query.name;
-  let queryString: string = "";
-  let queryResult: QueryResult;
+    const name: any = request.body.name;
+    let queryString: string = "";
+    let queryResult: QueryResult;
+  
+    if (name) {
+      queryString = `
+          SELECT
+              * 
+          FROM
+              movies
+          WHERE
+              name = $1;
+      `;
+      const queryConfig: QueryConfig = {
+        text: queryString,
+        values: [name],
+      };
+      queryResult = await client.query(queryConfig);
+      console.log(queryResult.rowCount)
+      if(queryResult.rowCount !=0){
+        return response.status(409).json({
+            error: "Movie name already exists!"
+        }
+     )
+      }
 
-  if (name) {
-    queryString = `
-        SELECT
-            * 
-        FROM
-            movies
-        WHERE
-            name = $;
-    `;
-    const queryConfig: QueryConfig = {
-      text: queryString,
-      values: [name],
-    };
-
-    
-    queryResult = await client.query(queryConfig);
-  } else {
-    queryString = `
-        SELECT
-            * 
-        FROM
-            movies;
-        `;
-
-    queryResult = await client.query(queryString);
-    if (queryResult.rowCount === 0) {
-      return response.status(409).json({
-        message: "error: Movie name already exists!",
-      });
     }
-    response.locals.movie = queryResult.rows[0];
-    return next();
-  }
+//    
+  return next();
+
 };
 
 export { idMovieExistsMiddleware, moviesMiddlewareNameExist };
