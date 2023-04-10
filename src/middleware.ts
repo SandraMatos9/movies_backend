@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { QueryConfig, QueryResult } from "pg";
 import { client } from "./database";
-import { TMovies, TMoviesRequest, movieResults } from "./interfaces";
+import {  movieResults } from "./interfaces";
 
 const idMovieExistsMiddleware = async (
   request: Request,
@@ -26,14 +26,12 @@ const idMovieExistsMiddleware = async (
   const queryResult: QueryResult<movieResults> = await client.query(
     queryConfig
   );
-  console.log(queryResult)
 
   if (queryResult.rowCount === 0) {
     return response.status(404).json({
       error: "Movie not found!",
     });
   }
-  console.log(queryResult.rows[0])
   response.locals.movie = queryResult.rows[0];
   return next();
 };
@@ -61,7 +59,6 @@ const moviesMiddlewareNameExist = async (
         values: [name],
       };
       queryResult = await client.query(queryConfig);
-      console.log(queryResult.rowCount)
       if(queryResult.rowCount !=0){
         return response.status(409).json({
             error: "Movie name already exists!"

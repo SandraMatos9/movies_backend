@@ -27,7 +27,6 @@ const createMovies = async (
   const queryResult: QueryResult<movieResults> = await client.query(
     queryString
   );
-  //   console.log(queryResult)
   const createdMovie = queryResult.rows[0];
   return response.status(201).json(createdMovie);
 };
